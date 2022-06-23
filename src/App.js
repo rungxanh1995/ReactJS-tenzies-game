@@ -11,16 +11,18 @@ function App() {
 	
 	React.useEffect(
 		() => {
-			checkIfPlayerWins();
+			if (playerHasWonGame() === true) { setTenzies(true); }
 		}, /*dependencies*/ [dice]
 	)
 	
-	function checkIfPlayerWins() {
+	function playerHasWonGame() {
 		// All dice have to be held and of same values for the player to win
 		const allAreHeld = dice.every(die => die.isHeld);
 		const allSameValue = dice.every(die => die.value === dice[0].value);
 		if (allAreHeld && allSameValue) {
-			setTenzies(true);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
