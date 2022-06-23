@@ -9,24 +9,38 @@ function App() {
 	const [tenzies, setTenzies] = React.useState(false);
 	const [dice, setDice] = React.useState(allNewDice());
 	
+	const [gameStartTime, setGameStartTime] = React.useState(Date.now());
+	
 	React.useEffect(
 		() => {
-			checkIfPlayerWins();
-		}, /*dependencies*/ [dice]
+			if (playerHasWonGame() === true) { setTenzies(true); }
+		}, /*dependencies array*/ [dice]
 	)
 	
-	function checkIfPlayerWins() {
+	function playerHasWonGame() {
 		// All dice have to be held and of same values for the player to win
 		const allAreHeld = dice.every(die => die.isHeld);
 		const allSameValue = dice.every(die => die.value === dice[0].value);
 		if (allAreHeld && allSameValue) {
-			setTenzies(true);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
 	function setNewGame() {
 		setDice(allNewDice);
 		setTenzies(false);
+		setGameStartTime(Date.now());
+	}
+	
+	function measurePlayingTimeInSeconds(/*number*/ startTime) {
+		const gameEndTime = Date.now();
+		return Math.ceil((gameEndTime - startTime) / 1_000);
+	}
+	
+	function generatePlayTimeResult() {
+		return `It took you ${measurePlayingTimeInSeconds(/*since:*/ gameStartTime)} seconds! Impressive 🥳!`;
 	}
 
 	function allNewDice() {
@@ -78,7 +92,9 @@ function App() {
 	return (
 		<main>
 			{tenzies === true && <Confetti />}
-			<h1 className="game-title">Tenzies</h1>
+			<h1 className="game-title">
+				{tenzies === true ? generatePlayTimeResult() : "Let's play Tenzies! 🎲"}
+			</h1>
 			<p className="game-instructions">
 				Roll until all dice are the same. Click each die to freeze it at
 				its current value between rolls.
